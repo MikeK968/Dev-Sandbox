@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tesla Valuation Model</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="nav-logo" href="#">
+        <svg width="18" height="22" viewBox="0 0 342 420" fill="#e31937">
+          <path d="M171 420L0 50h80l91 260 91-260h80z"/>
+          <path d="M0 50L44 0h254l44 50H171z"/>
+        </svg>
+        Tesla Valuation
+      </a>
+      <div class="nav-links">
+        <a href="#scenarios">Scenarios</a>
+        <a href="#model">Model</a>
+        <a href="#projections">Projections</a>
+        <a href="#sensitivity">Sensitivity</a>
+        <a href="#peers">Peers</a>
+        <a href="error-log.html" class="nav-log">Error Log</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow animate-in">Interactive DCF · 2025 Base Estimates</div>
+      <h1 class="hero-headline animate-in">What is Tesla<br>actually worth?</h1>
+      <p class="hero-sub animate-in">Drag to adjust every assumption.<br>See the fair value recalculate instantly.</p>
+      <div class="hero-card animate-in">
+        <div class="hero-card-label">Base Case Fair Value</div>
+        <div class="hero-card-price" id="hero-price">—</div>
+        <div class="hero-card-upside" id="hero-upside">—</div>
+      </div>
+      <a href="#scenarios" class="btn-red animate-in">Explore the model ↓</a>
+    </div>
+  </section>
+
+  <!-- SCENARIOS -->
+  <section id="scenarios" class="section bg-white">
+    <div class="inner">
+      <div class="section-header centered animate-up">
+        <p class="eyebrow">Three scenarios</p>
+        <h2 class="section-headline">Pick a thesis.<br>Customize every assumption.</h2>
+        <p class="section-sub">Click a card to load its assumptions into the model. Adjust any slider to go custom.</p>
+      </div>
+
+      <div class="scenario-grid">
+
+        <div class="scenario-card" id="card-bull" data-scenario="bull" onclick="loadScenario('bull')">
+          <span class="stag bull">Bull</span>
+          <h3 class="scenario-name">Hypergrowth &amp; FSD</h3>
+          <p class="scenario-desc">Robotaxi at scale, full autonomy reached, energy business inflects</p>
+          <ul class="scenario-stats">
+            <li><span>Revenue growth Yr 1–5</span><b>30%</b></li>
+            <li><span>Target operating margin</span><b>20%</b></li>
+            <li><span>Tax rate</span><b>18%</b></li>
+            <li><span>WACC</span><b>9%</b></li>
+          </ul>
+          <div class="scenario-fv-row">
+            <span class="scenario-fv-label">Fair Value</span>
+            <span class="scenario-fv bull-col" id="bull-price">—</span>
+          </div>
+          <div class="scenario-cta">Load scenario →</div>
+        </div>
+
+        <div class="scenario-card active" id="card-base" data-scenario="base" onclick="loadScenario('base')">
+          <span class="stag base">Base</span>
+          <h3 class="scenario-name">Steady Expansion</h3>
+          <p class="scenario-desc">Continued EV leadership, gradual margin recovery, no major new business lines</p>
+          <ul class="scenario-stats">
+            <li><span>Revenue growth Yr 1–5</span><b>15%</b></li>
+            <li><span>Target operating margin</span><b>15%</b></li>
+            <li><span>Tax rate</span><b>21%</b></li>
+            <li><span>WACC</span><b>10%</b></li>
+          </ul>
+          <div class="scenario-fv-row">
+            <span class="scenario-fv-label">Fair Value</span>
+            <span class="scenario-fv base-col" id="base-price">—</span>
+          </div>
+          <div class="scenario-cta active-cta">Current assumptions</div>
+        </div>
+
+        <div class="scenario-card" id="card-bear" data-scenario="bear" onclick="loadScenario('bear')">
+          <span class="stag bear">Bear</span>
+          <h3 class="scenario-name">Margin Pressure</h3>
+          <p class="scenario-desc">EV competition intensifies, pricing power erodes, execution risks materialize</p>
+          <ul class="scenario-stats">
+            <li><span>Revenue growth Yr 1–5</span><b>5%</b></li>
+            <li><span>Target operating margin</span><b>8%</b></li>
+            <li><span>Tax rate</span><b>21%</b></li>
+            <li><span>WACC</span><b>13%</b></li>
+          </ul>
+          <div class="scenario-fv-row">
+            <span class="scenario-fv-label">Fair Value</span>
+            <span class="scenario-fv bear-col" id="bear-price">—</span>
+          </div>
+          <div class="scenario-cta">Load scenario →</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- MODEL -->
+  <section id="model" class="section bg-offwhite">
+    <div class="inner">
+      <div class="section-header animate-up">
+        <p class="eyebrow">DCF Model</p>
+        <h2 class="section-headline">Every assumption.<br>In your hands.</h2>
+      </div>
+
+      <div class="model-grid">
+
+        <!-- LEFT: Sliders -->
+        <div class="sliders-col animate-up">
+
+          <div class="active-badge" id="active-badge">Base Case</div>
+
+          <!-- Market Price -->
+          <div class="field-group">
+            <label class="field-label">Market Reference Price</label>
+            <div class="price-row">
+              <div class="price-input-box">
+                <span class="prefix">$</span>
+                <input type="number" id="market-price" value="280" min="50" max="5000">
+                <button id="refresh-btn" title="Fetch live price">
+                  <svg id="refresh-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M4 4v5h5M20 20v-5h-5M5.6 15A9 9 0 104.5 9H4"/>
+                  </svg>
+                </button>
+              </div>
+              <span id="price-status" class="price-badge">—</span>
+            </div>
+            <p id="price-timestamp" class="field-hint"></p>
+          </div>
+
+          <!-- Growth -->
+          <div class="slider-section">
+            <h4 class="slider-section-title">Growth</h4>
+            <div class="slider-row">
+              <div class="slider-labels"><span>Revenue Growth — Yr 1–5</span><b id="g1-val">15%</b></div>
+              <input type="range" id="growth1" class="slider" min="0" max="50" value="15" step="1">
+            </div>
+            <div class="slider-row">
+              <div class="slider-labels"><span>Revenue Growth — Yr 6–10</span><b id="g2-val">10%</b></div>
+              <input type="range" id="growth2" class="slider" min="0" max="35" value="10" step="1">
+            </div>
+            <div class="slider-row">
+              <div class="slider-labels"><span>Terminal Growth Rate</span><b id="tgr-val">3.0%</b></div>
+              <input type="range" id="tgr" class="slider" min="0" max="5" value="3" step="0.5">
+            </div>
+          </div>
+
+          <!-- Profitability -->
+          <div class="slider-section">
+            <h4 class="slider-section-title">Profitability</h4>
+            <div class="slider-row">
+              <div class="slider-labels"><span>Target Operating Margin (Yr 10)</span><b id="margin-val">15.0%</b></div>
+              <input type="range" id="margin" class="slider" min="1" max="35" value="15" step="0.5">
+            </div>
+            <div class="slider-row">
+              <div class="slider-labels"><span>CapEx (% of Revenue)</span><b id="capex-val">8.0%</b></div>
+              <input type="range" id="capex" class="slider" min="2" max="18" value="8" step="0.5">
+            </div>
+            <div class="slider-row">
+              <div class="slider-labels"><span>Tax Rate</span><b id="tax-val">21%</b></div>
+              <input type="range" id="taxrate" class="slider" min="10" max="35" value="21" step="1">
+            </div>
+            <div class="slider-row">
+              <div class="slider-labels"><span>D&amp;A (% of Revenue)</span><b id="dna-val">4.0%</b></div>
+              <input type="range" id="dna" class="slider" min="1" max="10" value="4" step="0.5">
+            </div>
+          </div>
+
+          <!-- Discount Rate -->
+          <div class="slider-section">
+            <h4 class="slider-section-title">Discount Rate</h4>
+            <div class="slider-row">
+              <div class="slider-labels"><span>WACC</span><b id="wacc-val">10.0%</b></div>
+              <input type="range" id="wacc" class="slider" min="6" max="18" value="10" step="0.5">
+            </div>
+          </div>
+
+          <!-- Balance Sheet -->
+          <div class="slider-section">
+            <h4 class="slider-section-title">Balance Sheet</h4>
+            <div class="fixed-row">
+              <label>Base Revenue (2025E)</label>
+              <div class="fixed-val">$<input type="number" id="base-rev" value="100" min="50" max="300">B</div>
+            </div>
+            <div class="fixed-row">
+              <label>Net Cash</label>
+              <div class="fixed-val">$<input type="number" id="net-cash" value="24" min="-50" max="150">B</div>
+            </div>
+            <div class="fixed-row">
+              <label>Shares Outstanding</label>
+              <div class="fixed-val"><input type="number" id="shares" value="3.20" min="1" max="6" step="0.05">B</div>
+            </div>
+            <div class="fixed-row">
+              <label>Current Op. Margin (2025E)</label>
+              <div class="fixed-val-static">7.0%</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: Output -->
+        <div class="output-col animate-up">
+
+          <!-- Big price -->
+          <div class="price-hero">
+            <div class="price-hero-label">Fair Value / Share</div>
+            <div class="price-hero-value" id="out-price">—</div>
+            <div class="price-hero-upside" id="out-upside">—</div>
+          </div>
+
+          <!-- Bridge -->
+          <div class="bridge-card">
+            <div class="bridge-row">
+              <span>PV of Free Cash Flows (10yr)</span><span id="out-pv-fcf">—</span>
+            </div>
+            <div class="bridge-row">
+              <span>PV of Terminal Value</span><span id="out-pv-tv">—</span>
+            </div>
+            <div class="bridge-row bridge-sub">
+              <span>Enterprise Value</span><span id="out-ev">—</span>
+            </div>
+            <div class="bridge-row">
+              <span>+ Net Cash</span><span id="out-net-cash-disp" class="green">—</span>
+            </div>
+            <div class="bridge-row bridge-sub">
+              <span>Equity Value</span><span id="out-equity">—</span>
+            </div>
+          </div>
+
+          <!-- Metrics -->
+          <div class="metrics-grid">
+            <div class="metric-box">
+              <div class="metric-label">EV / Revenue (2026E)</div>
+              <div class="metric-val" id="out-ev-rev">—</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">EV / EBIT (2026E)</div>
+              <div class="metric-val" id="out-ev-ebit">—</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">TV % of Equity Value</div>
+              <div class="metric-val" id="out-tv-pct">—</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Yr 10 FCF Margin</div>
+              <div class="metric-val" id="out-fcf-margin">—</div>
+            </div>
+          </div>
+
+          <div id="tv-warning" class="tv-warn hidden">
+            ⚠ Terminal value &gt;80% of equity value — model is highly sensitive to long-term assumptions.
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTIONS -->
+  <section id="projections" class="section bg-black">
+    <div class="inner">
+      <div class="section-header animate-up">
+        <p class="eyebrow light">10-Year Forecast</p>
+        <h2 class="section-headline light">Revenue &amp; Free Cash Flow.</h2>
+        <p class="section-sub light">Based on your current assumptions.</p>
+      </div>
+      <div class="chart-box animate-up">
+        <canvas id="projection-chart"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- SENSITIVITY -->
+  <section id="sensitivity" class="section bg-white">
+    <div class="inner">
+      <div class="section-header centered animate-up">
+        <p class="eyebrow">Sensitivity Analysis</p>
+        <h2 class="section-headline">Fair value across<br>the assumption space.</h2>
+        <p class="section-sub">WACC (rows) × Revenue Growth Yr 1–5 (columns). Color indicates upside or downside vs. market price.</p>
+      </div>
+      <div class="sens-wrap animate-up">
+        <div id="sensitivity-table"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PEERS -->
+  <section id="peers" class="section bg-black">
+    <div class="inner">
+      <div class="section-header animate-up">
+        <p class="eyebrow light">Peer Multiples</p>
+        <h2 class="section-headline light">How Tesla compares.</h2>
+        <p class="section-sub light">Automotive &amp; mega-cap tech — 2025E estimates.</p>
+      </div>
+      <div class="animate-up">
+        <table class="peers-table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Mkt Cap</th>
+              <th>EV / Rev</th>
+              <th>EV / EBITDA</th>
+              <th>Fwd P/E</th>
+              <th>Rev Growth</th>
+            </tr>
+          </thead>
+          <tbody id="peers-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>For educational purposes only. Not financial advice.</p>
+    <p>Built with Claude Code · Estimates as of 2025</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
