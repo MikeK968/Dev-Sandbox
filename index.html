@@ -21,6 +21,7 @@
       </a>
       <div class="nav-links">
         <a href="#scenarios">Scenarios</a>
+        <a href="#valuation-range">Range</a>
         <a href="#model">Model</a>
         <a href="#projections">Projections</a>
         <a href="#sensitivity">Sensitivity</a>
@@ -107,6 +108,63 @@
           <div class="scenario-cta">Load scenario →</div>
         </div>
 
+      </div>
+    </div>
+  </section>
+
+  <!-- VALUATION RANGE -->
+  <section id="valuation-range" class="section bg-offwhite">
+    <div class="inner">
+      <div class="section-header centered animate-up">
+        <p class="eyebrow">Valuation Range</p>
+        <h2 class="section-headline">Where is Tesla <br>trading now?</h2>
+        <p class="section-sub">Your scenarios vs. market price. Green = upside, Red = downside.</p>
+      </div>
+      <div class="gauge-container animate-up">
+        <div class="gauge-labels-top">
+          <div class="gauge-label-item">
+            <span class="gauge-label-color bear"></span>
+            <span class="gauge-label-text">Bear Case</span>
+            <span class="gauge-label-val" id="gauge-bear-val">—</span>
+          </div>
+          <div class="gauge-label-item">
+            <span class="gauge-label-color base"></span>
+            <span class="gauge-label-text">Base Case</span>
+            <span class="gauge-label-val" id="gauge-base-val">—</span>
+          </div>
+          <div class="gauge-label-item">
+            <span class="gauge-label-color bull"></span>
+            <span class="gauge-label-text">Bull Case</span>
+            <span class="gauge-label-val" id="gauge-bull-val">—</span>
+          </div>
+        </div>
+
+        <div class="gauge-bar-wrapper">
+          <div class="gauge-bar">
+            <div class="gauge-segment bear-segment" id="bear-segment"></div>
+            <div class="gauge-segment base-segment" id="base-segment"></div>
+            <div class="gauge-segment bull-segment" id="bull-segment"></div>
+            <div class="gauge-marker" id="market-marker">
+              <div class="market-pin"></div>
+              <div class="market-label">Market: <span id="market-price-label">—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gauge-upside-row">
+          <div class="upside-item bear-case">
+            <span class="upside-label">Bear Upside</span>
+            <span class="upside-value" id="upside-bear">—</span>
+          </div>
+          <div class="upside-item base-case">
+            <span class="upside-label">Base Upside</span>
+            <span class="upside-value" id="upside-base">—</span>
+          </div>
+          <div class="upside-item bull-case">
+            <span class="upside-label">Bull Upside</span>
+            <span class="upside-value" id="upside-bull">—</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>

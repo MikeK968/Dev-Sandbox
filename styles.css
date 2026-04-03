@@ -357,6 +357,120 @@ body {
 }
 .tv-warn.hidden { display: none; }
 
+/* ── Valuation Range Gauge ── */
+.gauge-container {
+  max-width: 900px; margin: 0 auto;
+}
+
+.gauge-labels-top {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+  margin-bottom: 2.4rem;
+}
+
+.gauge-label-item {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center;
+}
+
+.gauge-label-color {
+  width: 28px; height: 28px; border-radius: 50%;
+  margin-bottom: 0.6rem; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.gauge-label-color.bear { background: #ff4860; }
+.gauge-label-color.base { background: #0075ff; }
+.gauge-label-color.bull { background: #1a7a30; }
+
+.gauge-label-text {
+  display: block; font-size: 0.82rem; font-weight: 600;
+  color: var(--g1); margin-bottom: 0.4rem;
+}
+
+.gauge-label-val {
+  display: block; font-size: 1.3rem; font-weight: 700;
+  color: var(--g1); font-variant-numeric: tabular-nums;
+}
+
+.gauge-bar-wrapper {
+  position: relative; margin: 3rem 0;
+  padding: 0 20px;
+}
+
+.gauge-bar {
+  position: relative; height: 48px;
+  background: linear-gradient(90deg, #ff4860 0%, #0075ff 50%, #1a7a30 100%);
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.gauge-segment {
+  position: absolute; top: 0; height: 100%;
+  pointer-events: none;
+}
+
+.bear-segment { left: 0%; background: rgba(255, 72, 96, 0.15); }
+.base-segment { background: rgba(0, 117, 255, 0.15); }
+.bull-segment { background: rgba(26, 122, 48, 0.15); }
+
+.gauge-marker {
+  position: absolute; top: 50%; transform: translateY(-50%) translateX(-50%);
+  left: 50%; z-index: 10;
+  text-align: center;
+}
+
+.market-pin {
+  width: 32px; height: 32px;
+  background: #fff; border: 3px solid var(--g1);
+  border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  margin: 0 auto 8px;
+}
+
+.market-label {
+  background: var(--g1); color: #fff;
+  padding: 0.4rem 0.8rem; border-radius: 6px;
+  font-size: 0.75rem; font-weight: 600;
+  letter-spacing: 0.05em; white-space: nowrap;
+}
+
+.gauge-upside-row {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem; margin-top: 2.4rem;
+}
+
+.upside-item {
+  background: #fff; border-radius: 12px;
+  padding: 1.2rem 1rem; text-align: center;
+  border: 1.5px solid var(--g4);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.upside-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.upside-label {
+  display: block; font-size: 0.72rem;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--g3); font-weight: 600; margin-bottom: 0.6rem;
+}
+
+.upside-value {
+  display: block; font-weight: 700; font-size: 1.8rem;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+}
+
+.upside-item.bear-case .upside-value { color: #b30000; }
+.upside-item.base-case .upside-value { color: var(--g1); }
+.upside-item.bull-case .upside-value { color: #1a7a30; }
+
+@media (max-width: 640px) {
+  .gauge-labels-top { gap: 1rem; }
+  .gauge-label-val { font-size: 1rem; }
+  .gauge-upside-row { gap: 1rem; }
+  .upside-value { font-size: 1.4rem; }
+}
+
 /* ── Chart ── */
 .chart-box {
   background: rgba(255,255,255,0.03);

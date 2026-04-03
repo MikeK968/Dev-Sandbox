@@ -195,6 +195,62 @@ function updateScenarioPrices() {
   }
 }
 
+/* ─── VALUATION RANGE GAUGE ──────────────────────────────────── */
+function updateGauge(params, fixed) {
+  const marketPrice = parseFloat(document.getElementById('market-price').value) || 280;
+
+  // Calculate fair values for all scenarios
+  const bearResult = calcDCF(SCENARIOS.bear, fixed);
+  const baseResult = calcDCF(SCENARIOS.base, fixed);
+  const bullResult = calcDCF(SCENARIOS.bull, fixed);
+
+  const bearFV = bearResult.fairValue;
+  const baseFV = baseResult.fairValue;
+  const bullFV = bullResult.fairValue;
+
+  // Update displayed fair values
+  document.getElementById('gauge-bear-val').textContent = '$' + fmt(bearFV, 0);
+  document.getElementById('gauge-base-val').textContent = '$' + fmt(baseFV, 0);
+  document.getElementById('gauge-bull-val').textContent = '$' + fmt(bullFV, 0);
+  document.getElementById('market-price-label').textContent = '$' + fmt(marketPrice, 0);
+
+  // Calculate upsides
+  const upsideBear = ((bearFV - marketPrice) / marketPrice) * 100;
+  const upsideBase = ((baseFV - marketPrice) / marketPrice) * 100;
+  const upsideBull = ((bullFV - marketPrice) / marketPrice) * 100;
+
+  // Format and display upsides
+  document.getElementById('upside-bear').textContent = (upsideBear >= 0 ? '+' : '') + fmt(upsideBear, 1) + '%';
+  document.getElementById('upside-base').textContent = (upsideBase >= 0 ? '+' : '') + fmt(upsideBase, 1) + '%';
+  document.getElementById('upside-bull').textContent = (upsideBull >= 0 ? '+' : '') + fmt(upsideBull, 1) + '%';
+
+  // Calculate gauge bar positioning
+  const minVal = Math.min(bearFV, baseFV, bullFV, marketPrice * 0.8);
+  const maxVal = Math.max(bearFV, baseFV, bullFV, marketPrice * 1.2);
+  const range = maxVal - minVal;
+
+  // Position segments (each represents their range on the bar)
+  const bearStart = (Math.min(bearFV, baseFV, bullFV) - minVal) / range * 100;
+  const bearEnd = (bearFV - minVal) / range * 100;
+  const baseStart = (Math.min(baseFV, bullFV) - minVal) / range * 100;
+  const baseEnd = (baseFV - minVal) / range * 100;
+  const bullStart = (Math.min(bullFV, marketPrice) - minVal) / range * 100;
+  const bullEnd = (bullFV - minVal) / range * 100;
+
+  // Simplified: make segments span the full gradient
+  document.getElementById('bear-segment').style.width = '33.33%';
+  document.getElementById('base-segment').style.width = '33.34%';
+  document.getElementById('bull-segment').style.width = '33.33%';
+  document.getElementById('bear-segment').style.left = '0%';
+  document.getElementById('base-segment').style.left = '33.33%';
+  document.getElementById('bull-segment').style.left = '66.67%';
+
+  // Position market price marker on gauge
+  const marketPos = ((marketPrice - minVal) / range) * 100;
+  const marker = document.getElementById('market-marker');
+  marker.style.left = Math.max(5, Math.min(95, marketPos)) + '%';
+}
+
 /* ─── DETECT ACTIVE SCENARIO ─────────────────────────────────── */
 function detectScenario() {
   const mapping = [
@@ -298,6 +354,7 @@ function update() {
 
   updateScenarioPrices();
   updateChart(params, fixed);
+  updateGauge(params, fixed);
   buildSensitivity(params, fixed);
 }
 
